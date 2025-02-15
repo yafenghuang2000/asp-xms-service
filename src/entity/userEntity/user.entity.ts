@@ -15,7 +15,7 @@ type DateType = string | number | Date;
  * 用于映射数据库中的用户表
  */
 @Entity('user_info')
-export default class UserEntity {
+export class UserEntity {
   /**
    * 主键，由数据库自动生成
    */
