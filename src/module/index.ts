@@ -6,7 +6,7 @@ import { LoggingInterceptor } from '@/utils/logging.interceptor';
 import { JwtStrategy } from '@/utils/jwt.strategy';
 import { JwtAuthGuard } from '@/utils/jwt.guard';
 import { JwtModule } from '@nestjs/jwt';
-import { IS_PUBLIC_KEY } from '@/utils/public.decorator';
+// import { IS_PUBLIC_KEY } from '@/utils/public.decorator';
 import { UserModule } from './user.module';
 import { UserEntity } from '@/entity/userEntity';
 
@@ -26,7 +26,7 @@ import { UserEntity } from '@/entity/userEntity';
       password: '123456789',
       database: 'my-test',
       entities: [UserEntity],
-      synchronize: true, // 开发环境下可以设为true，生产环境下建议设为false
+      synchronize: true, // 开发环境下可以设为true，生产环境下建议设为false(自动同步数据库结构)
     }),
     UserModule,
   ],
