@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsString, IsNotEmpty, IsOptional } from 'class-validator';
-import { Expose } from 'class-transformer';
+import { IsEmail, IsString, IsNotEmpty, IsOptional, ValidateNested } from 'class-validator';
+import { Expose, Type } from 'class-transformer';
 
 /**
  * 登录请求体
@@ -114,12 +114,14 @@ export class RegisterDto {
   role?: string;
 
   @IsOptional()
+  @ValidateNested({ each: true })
+  @Type(() => String)
   @ApiProperty({
-    type: String,
+    type: [String],
     description: '权限',
     required: false,
   })
-  permission?: string;
+  permission?: string[];
 }
 
 /**
