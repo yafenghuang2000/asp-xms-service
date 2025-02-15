@@ -2,7 +2,7 @@ import { Body, Controller, Post } from '@nestjs/common';
 import { ApiBody, ApiOperation } from '@nestjs/swagger';
 import { BaseTransformResponse, BusinessException } from '@/utils/response-transformer.interceptor';
 import { Public } from '@/utils/public.decorator';
-import { LoginDto, LoginResponseDto } from '@/dto/userDto';
+import { LoginDto, LoginResponseDto, RegisterDto, RegisterResponseDto } from '@/dto/userDto';
 import { UseService } from '@/service/useService';
 
 @Controller('user')
@@ -23,6 +23,27 @@ export class UserController {
     } catch (error) {
       if (error instanceof Error) {
         throw new BusinessException(error.message);
+      } else {
+        throw new BusinessException(String(error));
+      }
+    }
+  }
+
+  @Post('register')
+  @Public()
+  @ApiOperation({ summary: '注册用户' })
+  @ApiBody({
+    description: '注册用户请求体',
+    type: RegisterDto,
+  })
+  async register(@Body() registerDto: RegisterDto): Promise<RegisterResponseDto> {
+    try {
+      const savedUser = await this.useService.register(registerDto);
+
+      return BaseTransformResponse(RegisterResponseDto, savedUser);
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new BusinessException(String(error.message));
       } else {
         throw new BusinessException(String(error));
       }
