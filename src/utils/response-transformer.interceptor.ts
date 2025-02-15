@@ -30,7 +30,7 @@ export class ResponseTransformerInterceptor implements NestInterceptor {
 }
 
 //指定异常类
-export class BusinessException extends HttpException {
+class BusinessException extends HttpException {
   constructor(message: string | { code: number; message: string }, code: number = 9000) {
     if (typeof message === 'string') {
       super({ code: 9000, data: null, message }, 200);
@@ -44,6 +44,14 @@ export class BusinessException extends HttpException {
         200,
       );
     }
+  }
+}
+
+export function ErrorHandlerService(error: unknown): never {
+  if (error instanceof Error) {
+    throw new BusinessException(error.message);
+  } else {
+    throw new BusinessException(String(error));
   }
 }
 

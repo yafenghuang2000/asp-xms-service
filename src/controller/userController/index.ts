@@ -1,10 +1,12 @@
 import { Body, Controller, Post } from '@nestjs/common';
 import { ApiBody, ApiOperation } from '@nestjs/swagger';
-import { BusinessException, BaseTransformResponse } from '@/utils/response-transformer.interceptor';
+import {
+  BaseTransformResponse,
+  ErrorHandlerService,
+} from '@/utils/response-transformer.interceptor';
 import { Public } from '@/utils/jwt-config/public.decorator';
 import { LoginDto, LoginResponseDto, RegisterDto, RegisterResponseDto } from '@/dto/userDto';
 import { UseService } from '@/service/useService';
-// import { plainToClass } from 'class-transformer';
 
 @Controller('user')
 export class UserController {
@@ -20,13 +22,9 @@ export class UserController {
   async login(@Body() body: LoginDto): Promise<LoginResponseDto> {
     try {
       const result = await this.useService.login(body);
-      return result ?? null;
+      return BaseTransformResponse(LoginResponseDto, result);
     } catch (error) {
-      if (error instanceof Error) {
-        throw new BusinessException(error.message);
-      } else {
-        throw new BusinessException(String(error));
-      }
+      ErrorHandlerService(error);
     }
   }
 
@@ -42,11 +40,7 @@ export class UserController {
       const savedUser = await this.useService.register(registerDto);
       return BaseTransformResponse(RegisterResponseDto, savedUser);
     } catch (error) {
-      if (error instanceof Error) {
-        throw new BusinessException(String(error.message));
-      } else {
-        throw new BusinessException(String(error));
-      }
+      ErrorHandlerService(error);
     }
   }
 }
