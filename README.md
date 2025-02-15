@@ -1,4 +1,3 @@
-@nestjs/platform-socket.io
-@nestjs/websockets
-jsonwebtoken
-socket.io
+@nestjs/platform-socket.io @nestjs/websockets socket.io
+
+JWT守卫目前有bug暂停使用

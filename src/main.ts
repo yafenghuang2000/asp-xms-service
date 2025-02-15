@@ -1,9 +1,9 @@
 import { NestFactory } from '@nestjs/core';
-import { Reflector } from '@nestjs/core';
+// import { Reflector } from '@nestjs/core';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import * as dotenv from 'dotenv';
 import { ResponseTransformerInterceptor } from '@/utils/response-transformer.interceptor';
-import { JwtAuthGuard } from '@/utils/jwt.guard';
+// import { JwtAuthGuard } from '@/utils/jwt.guard'; //JWT守卫
 import { AppModule } from './module';
 
 dotenv.config();
@@ -11,8 +11,8 @@ async function bootstrap() {
   try {
     const app = await NestFactory.create(AppModule);
     // 配置全局 JWT 守卫
-    const reflector = app.get(Reflector);
-    app.useGlobalGuards(new JwtAuthGuard(reflector));
+    // const reflector = app.get(Reflector);
+    // app.useGlobalGuards(new JwtAuthGuard(reflector));
     // 注册全局响应转换拦截器
     app.useGlobalInterceptors(new ResponseTransformerInterceptor());
 
