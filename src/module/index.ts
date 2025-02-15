@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { LoggingInterceptor } from '@/utils/logging.interceptor';
-import { JwtGlobalModule } from './jwt.global.module';
-import { TypeOrmConfigModule } from './typeorm-config.module';
-import { GlobalEntitiesModule } from './global-entities.module';
+import { JwtGlobalModule } from '../utils/jwt.global.module';
+import { TypeOrmConfigModule } from '../utils/typeorm-config.module';
+import { GlobalEntitiesModule } from '../utils/global-entities.module';
 import { UserModule } from './user.module';
 
 @Module({
