@@ -1,6 +1,6 @@
 import { Body, Controller, Post } from '@nestjs/common';
 import { ApiBody, ApiOperation } from '@nestjs/swagger';
-import { BaseTransformResponse, BusinessException } from '@/utils/response-transformer.interceptor';
+import { BusinessException } from '@/utils/response-transformer.interceptor';
 import { Public } from '@/utils/public.decorator';
 import { LoginDto, LoginResponseDto, RegisterDto, RegisterResponseDto } from '@/dto/userDto';
 import { UseService } from '@/service/useService';
@@ -19,7 +19,7 @@ export class UserController {
   async login(@Body() body: LoginDto): Promise<LoginResponseDto> {
     try {
       const result = await this.useService.login(body);
-      return BaseTransformResponse(LoginResponseDto, result);
+      return result ?? null;
     } catch (error) {
       if (error instanceof Error) {
         throw new BusinessException(error.message);
@@ -39,8 +39,8 @@ export class UserController {
   async register(@Body() registerDto: RegisterDto): Promise<RegisterResponseDto> {
     try {
       const savedUser = await this.useService.register(registerDto);
-
-      return BaseTransformResponse(RegisterResponseDto, savedUser);
+      return savedUser ?? null;
+      // return BaseTransformResponse(RegisterResponseDto, savedUser);
     } catch (error) {
       if (error instanceof Error) {
         throw new BusinessException(String(error.message));

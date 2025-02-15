@@ -1,9 +1,9 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
-import bcrypt from 'bcrypt';
-import { LoginResponseDto, LoginDto, RegisterDto } from '@/dto/userDto';
+import * as bcrypt from 'bcrypt';
+import { LoginResponseDto, LoginDto, RegisterDto, RegisterResponseDto } from '@/dto/userDto';
 import { UserEntity } from '@/entity/userEntity';
 
 @Injectable()
@@ -20,13 +20,13 @@ export class UseService {
       });
 
       if (!user) {
-        throw new UnauthorizedException('用户不存在');
+        throw new BadRequestException('用户不存在');
       }
 
       const isPasswordValid = await bcrypt.compare(loginDto.password, user.password);
 
       if (!isPasswordValid) {
-        throw new UnauthorizedException('密码错误');
+        throw new BadRequestException('密码错误');
       }
 
       const token = this.jwtService.sign(
@@ -44,39 +44,39 @@ export class UseService {
       };
     } catch (e) {
       console.log(e);
-      throw new UnauthorizedException(e);
+      throw new BadRequestException(e);
     }
   };
 
   // 注册用户
-  async register(registerDto: RegisterDto): Promise<UserEntity> {
+  async register(registerDto: RegisterDto): Promise<RegisterResponseDto> {
     // 检查用户是否已存在
     const existingUser = await this.userRepository.findOne({
       where: { username: registerDto.username },
     });
 
     if (existingUser) {
-      throw new UnauthorizedException('用户已存在');
+      throw new BadRequestException('用户已存在');
     }
 
     // 检查密码是否符合要求
     if (registerDto.password.length < 6) {
-      throw new UnauthorizedException('密码长度必须大于6位');
+      throw new BadRequestException('密码长度必须大于6位');
     }
 
     // 检查邮箱是否符合要求
     if (!registerDto.email.includes('@')) {
-      throw new UnauthorizedException('邮箱格式不正确');
+      throw new BadRequestException('邮箱格式不正确');
     }
 
     // 检查手机号码是否符合要求
-    if (registerDto.mobile_number && !registerDto.mobile_number.includes('1')) {
-      throw new UnauthorizedException('手机号码格式不正确');
+    const mobileRegex = /^1[3-9]\d{9}$/;
+    if (registerDto.mobile_number && !mobileRegex.test(registerDto.mobile_number)) {
+      throw new BadRequestException('手机号码格式不正确');
     }
 
-    //密码使用bcrypt加密
+    // 密码使用bcrypt加密
     const saltOrRounds = 10;
-
     const hashedPassword: string = await bcrypt.hash(registerDto.password, saltOrRounds);
 
     try {
@@ -87,22 +87,17 @@ export class UseService {
         email: registerDto.email,
         createdAt: new Date(),
       });
-      // 保存用户并获取结果
       const savedUser = await this.userRepository.save(newUser);
+      console.log(savedUser, 'savedUser');
+
       if (savedUser && savedUser.id) {
-        const verifyUser = await this.userRepository.findOne({
-          where: { id: savedUser.id },
-        });
-
-        if (!verifyUser) {
-          throw new UnauthorizedException('用户创建失败');
-        }
-
-        return verifyUser;
+        return {
+          username: savedUser.username,
+        };
       }
-      throw new UnauthorizedException('用户创建失败');
+      throw new BadRequestException('用户创建失败');
     } catch (error) {
-      throw new UnauthorizedException(`用户创建失败: ${(error as Error).message || '未知错误'}`);
+      throw new BadRequestException(`用户创建失败: ${(error as Error).message || '未知错误'}`);
     }
   }
 }
