@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEmail, IsString, IsNotEmpty, IsOptional } from 'class-validator';
+import { Expose } from 'class-transformer';
 
 /**
  * 登录请求体
@@ -135,5 +136,6 @@ export class RegisterDto {
  */
 export class RegisterResponseDto {
   @ApiProperty({ description: '用户名' })
+  @Expose()
   username: string;
 }
