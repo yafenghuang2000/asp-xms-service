@@ -35,7 +35,7 @@ export class UseService {
           username: user.username,
           timestamp: new Date().getTime(),
         },
-        { expiresIn: '1h' },
+        { expiresIn: '1h', secret: process.env.JWT_SECRET },
       );
 
       return {

@@ -11,7 +11,6 @@ export class LoginDto {
   @ApiProperty({
     type: String,
     description: '用户名',
-    example: 'john_doe',
     required: true,
   })
   username: string;
@@ -21,7 +20,6 @@ export class LoginDto {
   @ApiProperty({
     type: String,
     description: '密码',
-    example: 'password123',
     required: true,
   })
   password: string;
@@ -32,9 +30,11 @@ export class LoginDto {
  */
 export class LoginResponseDto {
   @ApiProperty({ description: '用户名' })
+  @Expose()
   username: string;
 
   @ApiProperty({ description: 'token' })
+  @Expose()
   token: string;
 }
 
@@ -47,8 +47,7 @@ export class RegisterDto {
   @ApiProperty({
     type: String,
     description: '用户名',
-    example: 'john_doe',
-    required: true,
+    required: true, //必传字段
   })
   username: string;
 
@@ -57,8 +56,7 @@ export class RegisterDto {
   @ApiProperty({
     type: String,
     description: '密码',
-    example: 'password123',
-    required: true,
+    required: true, //必传字段
   })
   password: string;
 
@@ -67,8 +65,7 @@ export class RegisterDto {
   @ApiProperty({
     type: String,
     description: '手机号码',
-    example: '12345678901',
-    required: false,
+    required: true, //必传字段
   })
   mobile_number?: string;
 
@@ -78,8 +75,7 @@ export class RegisterDto {
   @ApiProperty({
     type: String,
     description: '邮箱',
-    example: 'john@example.com',
-    required: true,
+    required: true, //必传字段
   })
   email: string;
 
@@ -88,7 +84,6 @@ export class RegisterDto {
   @ApiProperty({
     type: String,
     description: '用户ID',
-    example: 'user123',
     required: false,
   })
   user_id?: string;
@@ -98,7 +93,6 @@ export class RegisterDto {
   @ApiProperty({
     type: String,
     description: '用户类型',
-    example: 'admin',
     required: false,
   })
   user_type?: string;
@@ -107,7 +101,6 @@ export class RegisterDto {
   @ApiProperty({
     type: Number,
     description: '状态',
-    example: 1,
     required: false,
   })
   status?: number;
@@ -116,7 +109,6 @@ export class RegisterDto {
   @ApiProperty({
     type: String,
     description: '角色',
-    example: 'admin',
     required: false,
   })
   role?: string;
@@ -125,7 +117,6 @@ export class RegisterDto {
   @ApiProperty({
     type: String,
     description: '权限',
-    example: 'read,write',
     required: false,
   })
   permission?: string;
