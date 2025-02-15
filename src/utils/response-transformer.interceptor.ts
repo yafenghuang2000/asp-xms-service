@@ -47,18 +47,9 @@ export class BusinessException extends HttpException {
   }
 }
 
-export class BaseController {
-  protected transformResponse<T, V>(cls: ClassConstructor<T>, data: V): T {
-    return plainToClass(cls, data, {
-      excludeExtraneousValues: true,
-      exposeUnsetFields: false,
-    });
-  }
-
-  protected BusinessExceptionResponse(
-    message: string | { code: number; message: string },
-    code: number = 9000,
-  ) {
-    throw new BusinessException(message, code);
-  }
+export function BaseTransformResponse<T, V>(cls: ClassConstructor<T>, data: V): T {
+  return plainToClass(cls, data, {
+    excludeExtraneousValues: true,
+    exposeUnsetFields: false,
+  });
 }

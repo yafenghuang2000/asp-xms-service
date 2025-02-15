@@ -1,30 +1,48 @@
-import { Injectable } from '@nestjs/common';
-import { UserResponseDto, loginDto } from '@/dto/userDto';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { JwtService } from '@nestjs/jwt';
+import bcrypt from 'bcrypt';
+import { LoginResponseDto, LoginDto } from '@/dto/userDto';
+import { UserEntity } from '@/entity/userEntity';
 
 @Injectable()
 export class UseService {
-  async login(body: loginDto): Promise<UserResponseDto> {
-    console.log(body, 'body');
-    return new Promise((resolve) => {
-      resolve({
-        username: 'string',
-        age: 11,
-        gender: 'string',
-        address: 'string',
-        phone: 'string',
+  constructor(
+    @InjectRepository(UserEntity)
+    private readonly userRepository: Repository<UserEntity>,
+    private readonly jwtService: JwtService,
+  ) {}
+  login = async (loginDto: LoginDto): Promise<LoginResponseDto> => {
+    try {
+      const user = await this.userRepository.findOne({
+        where: { username: loginDto.username },
       });
-    });
-  }
 
-  register = (): Promise<UserResponseDto> => {
-    return new Promise((resolve) => {
-      resolve({
-        username: '李四',
-        age: 20,
-        gender: '女',
-        address: '上海市',
-        phone: '13999999999',
+      if (!user) {
+        throw new UnauthorizedException('用户不存在');
+      }
+
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
+      const isPasswordValid = await bcrypt.compare(loginDto.password, user.password);
+
+      if (!isPasswordValid) {
+        throw new UnauthorizedException('密码错误');
+      }
+
+      const token = this.jwtService.sign({
+        id: user.id,
+        username: user.username,
+        timestamp: new Date().getTime(),
       });
-    });
+
+      return {
+        username: user.username,
+        token: token,
+      };
+    } catch (e) {
+      console.log(e);
+      throw new UnauthorizedException(e);
+    }
   };
 }

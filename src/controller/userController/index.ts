@@ -1,5 +1,8 @@
-import { Body, Controller, HttpException, HttpStatus, Post } from '@nestjs/common';
-import { loginDto, UserResponseDto } from '@/dto/userDto';
+import { Body, Controller, Post } from '@nestjs/common';
+import { ApiBody, ApiOperation } from '@nestjs/swagger';
+import { BaseTransformResponse, BusinessException } from '@/utils/response-transformer.interceptor';
+import { Public } from '@/utils/public.decorator';
+import { LoginDto, LoginResponseDto } from '@/dto/userDto';
 import { UseService } from '@/service/useService';
 
 @Controller('user')
@@ -7,12 +10,22 @@ export class UserController {
   constructor(private readonly useService: UseService) {}
 
   @Post('login')
-  async login(@Body() body: loginDto): Promise<UserResponseDto> {
+  @Public()
+  @ApiOperation({ summary: '用户登录' })
+  @ApiBody({
+    description: '登录请求体',
+    type: LoginDto,
+  })
+  async login(@Body() body: LoginDto): Promise<LoginResponseDto> {
     try {
-      return await this.useService.login(body);
+      const result = await this.useService.login(body);
+      return BaseTransformResponse(LoginResponseDto, result);
     } catch (error) {
-      console.error(error); // 使用 console.error 更合适
-      throw new HttpException('登录失败', HttpStatus.UNAUTHORIZED);
+      if (error instanceof Error) {
+        throw new BusinessException(error.message);
+      } else {
+        throw new BusinessException(String(error));
+      }
     }
   }
 }
