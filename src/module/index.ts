@@ -3,7 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 // import { PassportModule } from '@nestjs/passport';
 import { LoggingInterceptor } from '@/utils/logging.interceptor';
-import { JwtStrategy } from '@/utils/jwt.strategy';
+// import { JwtStrategy } from '@/utils/jwt.strategy';
 // import { JwtAuthGuard } from '@/utils/jwt.guard';
 // import { JwtModule } from '@nestjs/jwt';
 // import { IS_PUBLIC_KEY } from '@/utils/public.decorator';
@@ -40,7 +40,7 @@ import { UserEntity } from '@/entity/userEntity';
     //   provide: APP_GUARD,
     //   useClass: JwtAuthGuard,
     // },
-    JwtStrategy,
+    // JwtStrategy,
   ],
   // exports: [JwtModule],
 })
