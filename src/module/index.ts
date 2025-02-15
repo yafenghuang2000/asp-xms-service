@@ -1,7 +1,8 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-// import { APP_INTERCEPTOR } from '@nestjs/core';
+import { APP_INTERCEPTOR } from '@nestjs/core';
 import { PassportModule } from '@nestjs/passport';
+import { LoggingInterceptor } from '@/utils/logging.interceptor';
 import { JwtStrategy } from '@/utils/jwt.strategy';
 import { JwtModule } from '@nestjs/jwt';
 import { UserModule } from './user.module';
@@ -25,10 +26,10 @@ import { UserEntity } from '@/entity/userEntity';
   ],
   controllers: [],
   providers: [
-    // {
-    //   provide: APP_INTERCEPTOR,
-    //   useClass: LoggingInterceptor,
-    // },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: LoggingInterceptor,
+    },
     JwtStrategy,
   ],
   exports: [JwtModule],
