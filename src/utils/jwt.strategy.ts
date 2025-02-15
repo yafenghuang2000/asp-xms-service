@@ -5,6 +5,7 @@ import { ExtractJwt, Strategy } from 'passport-jwt';
 import { Reflector } from '@nestjs/core';
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
+import * as process from 'node:process';
 
 /**
  * JWT策略类，用于验证JWT的有效性
@@ -21,7 +22,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       // 设置是否忽略JWT的过期时间，这里设置为false，即不忽略过期时间
       ignoreExpiration: false,
       // 设置用于验证JWT的密钥，这里使用的是'your-secret-key'
-      secretOrKey: 'your-secret-key', // 建议使用环境变量存储密钥
+      secretOrKey: process.env.JWT_SECRET ?? '', // 建议使用环境变量存储密钥
     });
   }
 

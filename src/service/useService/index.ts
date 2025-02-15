@@ -23,18 +23,20 @@ export class UseService {
         throw new UnauthorizedException('用户不存在');
       }
 
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
       const isPasswordValid = await bcrypt.compare(loginDto.password, user.password);
 
       if (!isPasswordValid) {
         throw new UnauthorizedException('密码错误');
       }
 
-      const token = this.jwtService.sign({
-        id: user.id,
-        username: user.username,
-        timestamp: new Date().getTime(),
-      });
+      const token = this.jwtService.sign(
+        {
+          id: user.id,
+          username: user.username,
+          timestamp: new Date().getTime(),
+        },
+        { expiresIn: '1h' },
+      );
 
       return {
         username: user.username,

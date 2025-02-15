@@ -47,6 +47,12 @@ importers:
       dayjs:
         specifier: ^1.11.13
         version: 1.11.13
+      dotenv:
+        specifier: ^16.4.7
+        version: 16.4.7
+      jsonwebtoken:
+        specifier: ^9.0.2
+        version: 9.0.2
       mysql2:
         specifier: ^3.12.0
         version: 3.12.0

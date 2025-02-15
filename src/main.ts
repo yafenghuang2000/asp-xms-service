@@ -1,10 +1,12 @@
 import { NestFactory } from '@nestjs/core';
 import { Reflector } from '@nestjs/core';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import * as dotenv from 'dotenv';
 import { ResponseTransformerInterceptor } from '@/utils/response-transformer.interceptor';
 import { JwtAuthGuard } from '@/utils/jwt.guard';
 import { AppModule } from './module';
 
+dotenv.config();
 async function bootstrap() {
   try {
     const app = await NestFactory.create(AppModule);
@@ -20,17 +22,7 @@ async function bootstrap() {
       .setVersion('1.0')
       .addTag('api')
       // 添加 JWT 认证配置
-      .addBearerAuth(
-        {
-          type: 'http',
-          scheme: 'bearer',
-          bearerFormat: 'JWT',
-          name: 'JWT',
-          description: '输入 JWT token',
-          in: 'header',
-        },
-        'JWT-auth',
-      )
+      .addBearerAuth()
       .build();
 
     const document = SwaggerModule.createDocument(app, config);
