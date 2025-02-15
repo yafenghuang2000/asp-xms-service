@@ -1,7 +1,7 @@
 import { Body, Controller, Post } from '@nestjs/common';
 import { ApiBody, ApiOperation } from '@nestjs/swagger';
 import { BusinessException, BaseTransformResponse } from '@/utils/response-transformer.interceptor';
-import { Public } from '@/utils/public.decorator';
+import { Public } from '@/utils/jwt-config/public.decorator';
 import { LoginDto, LoginResponseDto, RegisterDto, RegisterResponseDto } from '@/dto/userDto';
 import { UseService } from '@/service/useService';
 // import { plainToClass } from 'class-transformer';
