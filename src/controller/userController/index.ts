@@ -1,10 +1,6 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Post, InternalServerErrorException } from '@nestjs/common';
 import { ApiBody, ApiOperation } from '@nestjs/swagger';
-import {
-  BaseTransformResponse,
-  ErrorHandlerService,
-  BusinessException,
-} from '@/utils/response-transformer.interceptor';
+import { BaseTransformResponse } from '@/utils/response-transformer.interceptor';
 import { Public } from '@/utils/jwt-config/public.decorator';
 import { LoginDto, LoginResponseDto, RegisterDto, RegisterResponseDto } from '@/dto/userDto';
 import { UseService } from '@/service/useService';
@@ -26,8 +22,7 @@ export class UserController {
       const result = await this.useService.login(body);
       return BaseTransformResponse(LoginResponseDto, result);
     } catch {
-      // ErrorHandlerService({ code: 500, message: error.message });
-      throw new BusinessException({ code: 500, message: '登录失败' });
+      throw new InternalServerErrorException();
     }
   }
 
@@ -43,7 +38,7 @@ export class UserController {
       const savedUser = await this.useService.register(registerDto);
       return BaseTransformResponse(RegisterResponseDto, savedUser);
     } catch (error) {
-      ErrorHandlerService(error);
+      throw new InternalServerErrorException(error);
     }
   }
 }
