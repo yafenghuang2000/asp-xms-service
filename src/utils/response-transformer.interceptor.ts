@@ -11,26 +11,28 @@ import { catchError, map } from 'rxjs/operators';
 import { plainToClass, ClassConstructor } from 'class-transformer';
 import { Response } from 'express';
 
+interface ResponseTransformer<T> {
+  code: number;
+  message: string;
+  data: T;
+}
+
 @Injectable()
 // 实现NestInterceptor接口的intercept方法，用于拦截请求和响应
 export class ResponseTransformerInterceptor implements NestInterceptor {
-  intercept<T>(context: ExecutionContext, next: CallHandler): Observable<T> {
-    // console.log(_context, '======_context');
+  intercept<T>(context: ExecutionContext, next: CallHandler): Observable<unknown> {
     const ctx = context.switchToHttp();
     const response: Response = ctx.getResponse();
     response.status(HttpStatus.OK); // 设置 HTTP 状态码为 200
-
     // 调用next.handle()获取处理后的响应流
     return next.handle().pipe(
-      // 使用map操作符对响应数据进行转换
-
       map((data: T) => {
         // 处理成功响应
         return {
           code: 0, // 成功状态码统一为 0
           message: 'success', // 默认成功信息
           data: data ?? null, // 明确指定 data 的类型为 T 或 null
-        } as T;
+        } as ResponseTransformer<T>;
       }),
       catchError((error: unknown) => {
         // 处理异常响应
@@ -39,10 +41,10 @@ export class ResponseTransformerInterceptor implements NestInterceptor {
 
         if (error instanceof HttpException) {
           const response = error.getResponse() as { code?: number; message?: string };
-          message = error.message || 'Internal server error';
+          message = error.message || '服务错误';
           code = response.code ?? 9000;
         } else {
-          message = 'Internal server error';
+          message = '服务错误';
           code = 9000;
         }
 
