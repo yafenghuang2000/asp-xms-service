@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
+import RedisCache from '@/utils/redisCache';
 import { LoginResponseDto, LoginDto, RegisterDto, RegisterResponseDto } from '@/dto/userDto';
 import { UserEntity } from '@/entity/userEntity/user.entity';
 
@@ -38,13 +39,18 @@ export class UseService {
         { expiresIn: '1h', secret: process.env.JWT_SECRET },
       );
 
+      const redis = await RedisCache.set(`user:${user.username}`, token, 60 * 60); //redis缓存token
+
+      if (!redis) {
+        throw new BadRequestException('redis缓存失败');
+      }
+
       return {
         username: user.username,
         token: token,
       };
-    } catch (e) {
-      console.log(e);
-      throw new BadRequestException(e);
+    } catch (error) {
+      throw new BadRequestException(`用户创建失败: ${(error as Error).message || '未知错误'}`);
     }
   };
 
