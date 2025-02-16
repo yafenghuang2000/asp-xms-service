@@ -3,6 +3,7 @@ import { NestFactory } from '@nestjs/core';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import * as dotenv from 'dotenv';
 import { ResponseTransformerInterceptor } from '@/utils/response-transformer.interceptor';
+// import { LoggingInterceptor } from '@/utils/log-config/logging.interceptor';
 // import { JwtAuthGuard } from '@/utils/jwt.guard'; //JWT守卫
 import { AppModule } from './module';
 

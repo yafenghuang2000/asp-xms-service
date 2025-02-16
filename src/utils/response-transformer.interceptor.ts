@@ -4,15 +4,22 @@ import {
   ExecutionContext,
   CallHandler,
   HttpException,
+  HttpStatus,
 } from '@nestjs/common';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { Observable, throwError } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
 import { plainToClass, ClassConstructor } from 'class-transformer';
+import { Response } from 'express';
 
 @Injectable()
 // 实现NestInterceptor接口的intercept方法，用于拦截请求和响应
 export class ResponseTransformerInterceptor implements NestInterceptor {
-  intercept<T>(_context: ExecutionContext, next: CallHandler): Observable<T> {
+  intercept<T>(context: ExecutionContext, next: CallHandler): Observable<T> {
+    // console.log(_context, '======_context');
+    const ctx = context.switchToHttp();
+    const response: Response = ctx.getResponse();
+    response.status(HttpStatus.OK); // 设置 HTTP 状态码为 200
+
     // 调用next.handle()获取处理后的响应流
     return next.handle().pipe(
       // 使用map操作符对响应数据进行转换
@@ -25,12 +32,39 @@ export class ResponseTransformerInterceptor implements NestInterceptor {
           data: data ?? null, // 明确指定 data 的类型为 T 或 null
         } as T;
       }),
+      catchError((error: unknown) => {
+        // 处理异常响应
+        let message: string;
+        let code: number;
+
+        if (error instanceof HttpException) {
+          const response = error.getResponse() as { code?: number; message?: string };
+          message = error.message || 'Internal server error';
+          code = response.code ?? 9000;
+        } else {
+          message = 'Internal server error';
+          code = 9000;
+        }
+        console.log(error, ';111111');
+
+        return throwError(
+          () =>
+            new HttpException(
+              {
+                code,
+                message,
+                data: null,
+              },
+              HttpStatus.OK,
+            ),
+        ); // 确保状态码为 200
+      }),
     );
   }
 }
 
 //指定异常类
-class BusinessException extends HttpException {
+export class BusinessException extends HttpException {
   constructor(message: string | { code: number; message: string }, code: number = 9000) {
     if (typeof message === 'string') {
       super({ code: 9000, data: null, message }, 200);
