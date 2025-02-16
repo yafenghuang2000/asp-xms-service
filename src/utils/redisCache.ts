@@ -1,53 +1,3 @@
-// // src/utils/redisCache.ts
-// import Redis from 'ioredis';
-
-// class RedisCache {
-//   private client: Redis;
-
-//   constructor() {
-//     this.client = new Redis({
-//       host: process.env.REDIS_HOST || 'localhost',
-//       port: parseInt(process.env.REDIS_PORT || '6379', 10),
-//       password: process.env.REDIS_PASSWORD,
-//     });
-
-//     this.client.on('connect', () => {
-//       console.log('Redis connected');
-//     });
-
-//     this.client.on('error', (err) => {
-//       console.error('Redis error:', err);
-//     });
-//   }
-
-//   async set<T>(key: string, value: T, ttl?: number): Promise<void> {
-//     if (ttl) {
-//       await this.client.set(key, JSON.stringify(value), 'EX', ttl);
-//     } else {
-//       await this.client.set(key, JSON.stringify(value));
-//     }
-//   }
-
-//   async get<T>(key: string): Promise<T | null> {
-//     const value = await this.client.get(key);
-//     if (value) {
-//       return JSON.parse(value) as T;
-//     }
-//     return null;
-//   }
-
-//   async delete(key: string): Promise<void> {
-//     await this.client.del(key);
-//   }
-
-//   async clear(): Promise<void> {
-//     await this.client.flushall();
-//   }
-// }
-
-// export default new RedisCache();
-
-// src/utils/redisCache.ts
 import Redis from 'ioredis';
 
 class RedisCache {
@@ -61,11 +11,15 @@ class RedisCache {
     });
 
     this.client.on('connect', () => {
-      console.log('Redis connected');
+      const host = this.client.options.host;
+      const port = this.client.options.port;
+      console.log(`Redis 连接成功:${host}:${port}`);
     });
 
     this.client.on('error', (err) => {
-      console.error('Redis error:', err);
+      const host = this.client.options.host;
+      const port = this.client.options.port;
+      console.log(`Redis 连接失败:${host}:${port}`, err);
     });
   }
 
