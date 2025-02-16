@@ -38,11 +38,27 @@ export class UseService {
         },
         { expiresIn: '1h', secret: process.env.JWT_SECRET },
       );
+      const redisKey = `user:${user.username}`;
+      // 检查缓存是否存在
+      const cacheExists = await RedisCache.exists(redisKey);
 
-      const redis = await RedisCache.set(`user:${user.username}`, token, 60 * 60); //redis缓存token
-
-      if (!redis) {
-        throw new BadRequestException('redis缓存失败');
+      if (!cacheExists) {
+        // 如果缓存不存在，设置缓存
+        const redisSet = await RedisCache.set(redisKey, token, 60 * 60);
+        const getRedis = await RedisCache.get(redisKey);
+        if (!redisSet) {
+          throw new BadRequestException('设置 Redis 缓存失败');
+        }
+        return {
+          username: user.username,
+          token: JSON.stringify(getRedis),
+        };
+      } else {
+        // 如果缓存存在，更新缓存的过期时间
+        const redisExpire = await RedisCache.expire(redisKey, 60 * 60);
+        if (!redisExpire) {
+          throw new BadRequestException('更新 Redis 缓存过期时间失败');
+        }
       }
 
       return {

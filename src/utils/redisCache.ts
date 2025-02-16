@@ -23,6 +23,7 @@ class RedisCache {
     });
   }
 
+  //设置缓存
   async set<T>(key: string, value: T, ttl?: number): Promise<boolean> {
     try {
       if (ttl) {
@@ -37,6 +38,7 @@ class RedisCache {
     }
   }
 
+  //获取缓存
   async get<T>(key: string): Promise<T | null> {
     try {
       const value = await this.client.get(key);
@@ -50,6 +52,29 @@ class RedisCache {
     }
   }
 
+  //检查缓存是否存在
+  async exists(key: string): Promise<boolean> {
+    try {
+      const result = await this.client.exists(key);
+      return result === 1; // 返回 true 表示键存在
+    } catch (error) {
+      console.error('Failed to check if key exists in Redis:', error);
+      return false; // 返回 false 表示检查失败或键不存在
+    }
+  }
+
+  //更新缓存过期时间
+  async expire(key: string, ttl: number): Promise<boolean> {
+    try {
+      await this.client.expire(key, ttl);
+      return true; // 返回 true 表示更新过期时间成功
+    } catch (error) {
+      console.error('Failed to update expiration time in Redis:', error);
+      return false; // 返回 false 表示更新过期时间失败
+    }
+  }
+
+  //删除缓存
   async delete(key: string): Promise<boolean> {
     try {
       await this.client.del(key);
@@ -60,6 +85,7 @@ class RedisCache {
     }
   }
 
+  //清除所有缓存
   async clear(): Promise<boolean> {
     try {
       await this.client.flushall();
