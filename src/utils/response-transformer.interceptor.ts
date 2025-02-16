@@ -45,7 +45,6 @@ export class ResponseTransformerInterceptor implements NestInterceptor {
           message = 'Internal server error';
           code = 9000;
         }
-        console.log(error, ';111111');
 
         return throwError(
           () =>
@@ -60,32 +59,6 @@ export class ResponseTransformerInterceptor implements NestInterceptor {
         ); // 确保状态码为 200
       }),
     );
-  }
-}
-
-//指定异常类
-export class BusinessException extends HttpException {
-  constructor(message: string | { code: number; message: string }, code: number = 9000) {
-    if (typeof message === 'string') {
-      super({ code: 9000, data: null, message }, 200);
-    } else {
-      super(
-        {
-          code: message.code ?? code,
-          message: message.message,
-          data: null,
-        },
-        200,
-      );
-    }
-  }
-}
-
-export function ErrorHandlerService(error: unknown): never {
-  if (error instanceof Error) {
-    throw new BusinessException(error.message);
-  } else {
-    throw new BusinessException(String(error));
   }
 }
 
