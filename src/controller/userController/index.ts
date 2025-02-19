@@ -10,7 +10,6 @@ export class UserController {
   constructor(private readonly useService: UseService) {}
 
   @Post('login')
-  // @HttpCode(HttpStatus.OK)
   @Public()
   @ApiOperation({ summary: '用户登录' })
   @ApiBody({

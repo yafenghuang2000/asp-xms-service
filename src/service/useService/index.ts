@@ -110,7 +110,6 @@ export class UseService {
         createdAt: new Date(),
       });
       const savedUser = await this.userRepository.save(newUser);
-      console.log(savedUser, 'savedUser');
 
       if (savedUser && savedUser.id) {
         return {
