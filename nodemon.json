@@ -2,6 +2,6 @@
   "watch": ["src"],
   "ext": "ts",
   "ignore": ["src/**/*.spec.ts"],
-  "exec": "nest start --watch",
+  "exec": "nest start --watch --evn=test",
   "delay": 2500
 }
