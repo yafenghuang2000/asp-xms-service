@@ -2,7 +2,6 @@ import { Injectable, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
-import bcrypt from 'bcrypt';
 import RedisCache from '@/utils/redisCache';
 import { LoginResponseDto, LoginDto, RegisterDto, RegisterResponseDto } from '@/dto/userDto';
 import { UserEntity } from '@/entity/userEntity/user.entity';
@@ -22,12 +21,6 @@ export class UseService {
 
       if (!user) {
         throw new BadRequestException('用户不存在');
-      }
-
-      const isPasswordValid = await bcrypt.compare(loginDto.password, user.password);
-
-      if (!isPasswordValid) {
-        throw new BadRequestException('密码错误');
       }
 
       const token = this.jwtService.sign(
@@ -57,7 +50,7 @@ export class UseService {
         // 如果缓存存在，更新缓存的过期时间
         const redisExpire = await RedisCache.expire(redisKey, 60 * 60);
         if (!redisExpire) {
-          throw new BadRequestException('更新 Redis 缓存过期时间失败');
+          new BadRequestException('更新 Redis 缓存过期时间失败');
         }
       }
 
@@ -97,9 +90,7 @@ export class UseService {
       throw new BadRequestException('手机号码格式不正确');
     }
 
-    // 密码使用bcrypt加密
-    const saltOrRounds = 10;
-    const hashedPassword: string = await bcrypt.hash(registerDto.password, saltOrRounds);
+    const hashedPassword: string = registerDto.password;
 
     try {
       const newUser = this.userRepository.create({
@@ -110,13 +101,13 @@ export class UseService {
         createdAt: new Date(),
       });
       const savedUser = await this.userRepository.save(newUser);
-
-      if (savedUser && savedUser.id) {
-        return {
-          username: savedUser.username,
-        };
+      if (!savedUser) {
+        new BadRequestException('用户创建失败');
       }
-      throw new BadRequestException('用户创建失败');
+
+      return {
+        username: savedUser.username,
+      };
     } catch (error) {
       throw new BadRequestException(`用户创建失败: ${(error as Error).message || '未知错误'}`);
     }

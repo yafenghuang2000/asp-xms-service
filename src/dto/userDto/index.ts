@@ -12,6 +12,7 @@ export class LoginDto {
     type: String,
     description: '用户名',
     required: true,
+    example: 'admin',
   })
   username: string;
 
@@ -21,6 +22,7 @@ export class LoginDto {
     type: String,
     description: '密码',
     required: true,
+    example: '123456admin',
   })
   password: string;
 }
@@ -48,6 +50,7 @@ export class RegisterDto {
     type: String,
     description: '用户名',
     required: true, //必传字段
+    example: 'admin',
   })
   username: string;
 
@@ -57,6 +60,7 @@ export class RegisterDto {
     type: String,
     description: '密码',
     required: true, //必传字段
+    example: '123456admin',
   })
   password: string;
 
@@ -66,6 +70,7 @@ export class RegisterDto {
     type: String,
     description: '手机号码',
     required: true, //必传字段
+    example: '15512341234',
   })
   mobile_number?: string;
 
@@ -76,6 +81,7 @@ export class RegisterDto {
     type: String,
     description: '邮箱',
     required: true, //必传字段
+    example: '15512341234@qq.com',
   })
   email: string;
 
@@ -85,6 +91,7 @@ export class RegisterDto {
     type: String,
     description: '用户ID',
     required: false,
+    example: '1',
   })
   user_id?: string;
 
@@ -94,6 +101,7 @@ export class RegisterDto {
     type: String,
     description: '用户类型',
     required: false,
+    example: 'admin',
   })
   user_type?: string;
 
@@ -102,14 +110,16 @@ export class RegisterDto {
     type: Number,
     description: '状态',
     required: false,
+    example: true,
   })
-  status?: number;
+  status?: boolean;
 
   @IsOptional()
   @ApiProperty({
     type: String,
     description: '角色',
     required: false,
+    example: 'admin',
   })
   role?: string;
 
@@ -120,6 +130,7 @@ export class RegisterDto {
     type: [String],
     description: '权限',
     required: false,
+    example: ['admin'],
   })
   permission?: string[];
 }

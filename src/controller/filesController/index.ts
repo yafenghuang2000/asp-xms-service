@@ -1,8 +1,6 @@
 import { Body, Controller, Post, InternalServerErrorException } from '@nestjs/common';
 import { ApiBody, ApiOperation } from '@nestjs/swagger';
 import { FileDto } from '@/dto/fileDto';
-// import { BaseTransformResponse } from '@/utils/response-transformer.interceptor';
-// import { LoginDto } from '@/dto/userDto';
 
 @Controller('files')
 class FilesController {

@@ -25,7 +25,7 @@ export class TypeOrmConfigModule implements OnModuleInit {
 
   async onModuleInit() {
     try {
-      if (this.connection && this.connection.isConnected === false) {
+      if (this.connection && !this.connection.isConnected) {
         await this.connection.connect();
         console.log('MySQL数据库连接成功:localhost:3306');
       } else {
