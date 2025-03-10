@@ -28,9 +28,10 @@ async function bootstrap() {
 
     const document = SwaggerModule.createDocument(app, config);
     SwaggerModule.setup('api', app, document);
-
-    await app.listen(process.env.SERVICE_PORT || 3000);
-    console.log(`asp-xms-service服务启动成功:${process.env.SERVICE_PORT ?? 3000}`);
+    // const prot = process.env.SERVICE_PORT;
+    const prot = 9000;
+    await app.listen(prot);
+    console.log(`asp-xms-service服务启动成功:${prot ?? 3000}`);
   } catch (error) {
     console.log(`asp-xms-service服务启动失败:${error}`);
   }

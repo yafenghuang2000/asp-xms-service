@@ -13,54 +13,37 @@ export class UseService {
     private readonly userRepository: Repository<UserEntity>,
     private readonly jwtService: JwtService,
   ) {}
+
   login = async (loginDto: LoginDto): Promise<LoginResponseDto> => {
-    try {
-      const user = await this.userRepository.findOne({
-        where: { username: loginDto.username },
-      });
+    const user = await this.userRepository.findOne({
+      where: { username: loginDto.username },
+    });
 
-      if (!user) {
-        throw new BadRequestException('用户不存在');
-      }
-
-      const token = this.jwtService.sign(
-        {
-          id: user.id,
-          username: user.username,
-          timestamp: new Date().getTime(),
-        },
-        { expiresIn: '1h', secret: process.env.JWT_SECRET },
-      );
-      const redisKey = `user:${user.username}`;
-      // 检查缓存是否存在
-      const cacheExists = await RedisCache.exists(redisKey);
-
-      if (!cacheExists) {
-        // 如果缓存不存在，设置缓存
-        const redisSet = await RedisCache.set(redisKey, token, 60 * 60);
-        const getRedis = await RedisCache.get(redisKey);
-        if (!redisSet) {
-          throw new BadRequestException('设置 Redis 缓存失败');
-        }
-        return {
-          username: user.username,
-          token: JSON.stringify(getRedis),
-        };
-      } else {
-        // 如果缓存存在，更新缓存的过期时间
-        const redisExpire = await RedisCache.expire(redisKey, 60 * 60);
-        if (!redisExpire) {
-          new BadRequestException('更新 Redis 缓存过期时间失败');
-        }
-      }
-
-      return {
-        username: user.username,
-        token: token,
-      };
-    } catch (error) {
-      throw new BadRequestException(`用户创建失败: ${(error as Error).message || '未知错误'}`);
+    if (!user) {
+      throw new BadRequestException('用户不存在');
     }
+
+    const token = this.jwtService.sign(
+      {
+        id: user.id,
+        username: user.username,
+        timestamp: new Date().getTime(),
+      },
+      { expiresIn: '1h', secret: process.env.JWT_SECRET },
+    );
+
+    const redisKey = `user:${user.username}`;
+    // 如果缓存不存在，设置缓存
+    const redisSet = await RedisCache.set(redisKey, token, 60 * 60);
+    const getRedis = await RedisCache.get(redisKey);
+    if (!redisSet) {
+      throw new BadRequestException('设置 Redis 缓存失败');
+    }
+
+    return {
+      username: user.username,
+      token: JSON.stringify(getRedis),
+    };
   };
 
   // 注册用户
